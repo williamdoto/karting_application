@@ -14,7 +14,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -66,12 +65,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-    int index = 0;
-  final screens = [
-    HomePage(),  
-    TrackPage(),
-    RecordPage()
-  ];
+  int index = 0;
+  final screens = [HomePage(), TrackPage(), RecordPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -84,20 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
             TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ),
-        child: NavigationBar(       
+        child: NavigationBar(
           height: 70,
           backgroundColor: Colors.grey.shade300,
           selectedIndex: index,
           onDestinationSelected: (index) => setState(() => this.index = index),
           destinations: [
-            NavigationDestination(icon: Icon(Icons.home_outlined), label: "Home"),
-            NavigationDestination(icon: Icon(Icons.location_on_outlined), label: "Track"),
-            NavigationDestination(icon: Icon(Icons.emoji_flags_rounded), label: "Record"),
+            NavigationDestination(
+                icon: Icon(Icons.home_outlined), label: "Home"),
+            NavigationDestination(
+                icon: Icon(Icons.location_on_outlined), label: "Track"),
+            NavigationDestination(
+                icon: Icon(Icons.emoji_flags_rounded), label: "Record"),
           ],
         ),
       ),
     );
   }
 }
-
-  
