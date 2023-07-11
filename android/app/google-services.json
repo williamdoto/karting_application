@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875560978679",
+    "project_id": "speedtrap-application",
+    "storage_bucket": "speedtrap-application.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875560978679:android:8dd908de8c26181a082bf2",
+        "android_client_info": {
+          "package_name": "com.example.karting_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875560978679-o4er7hnpibbu6c4fmhkv9dcfhr9gbs2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4C58pKkpn-9dKSuwIGsZucOY9ByZvrDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875560978679-o4er7hnpibbu6c4fmhkv9dcfhr9gbs2f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
