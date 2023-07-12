@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'homePage.dart';
 import 'package:karting_application/TrackPage.dart';
 import 'package:karting_application/RecordPage.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   runApp(const MyApp());
 }
