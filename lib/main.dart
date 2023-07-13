@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Speed Trap',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         initialRoute: '/',
         routes: {

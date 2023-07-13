@@ -128,13 +128,7 @@ class _TrackPageState extends State<TrackPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tracks Around You'),
-        bottom: PreferredSize(
-          preferredSize:
-              const Size.fromHeight(60.0), // Adjust this to your needs
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: SearchBar(
+        title: SearchBar(
               controller: _searchController,
               hintText: "Search",
               leading: const Icon(Icons.search),
@@ -172,8 +166,6 @@ class _TrackPageState extends State<TrackPage> {
                 _fetchKartPlaces(); // Fetch kart places whenever the user submits a search
               },
             ),
-          ),
-        ),
       ),
       body: ListView.builder(
         itemCount: _kartPlaces.length,
