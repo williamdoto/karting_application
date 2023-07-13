@@ -40,6 +40,13 @@ dependencies:
   google_maps_flutter: ^2.3.1
   permission_handler: ^10.4.2
   flutter_google_maps_webservices: ^1.1.1
+  cloud_firestore: ^4.0.0
+  firebase_core: ^2.0.0
+  device_info_plus: ^2.1.0
+  provider: ^6.0.1
+  intl: ^0.17.0
+  datetime_picker_formfield: ^2.0.0
+  uuid: ^3.0.4
 
 dev_dependencies:
   flutter_test:

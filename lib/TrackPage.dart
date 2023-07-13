@@ -64,7 +64,7 @@ class _TrackPageState extends State<TrackPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // close the dialog
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const MyApp(),
+                  builder: (context) => MyApp(),
                 ));
               },
             ),
@@ -235,7 +235,7 @@ class _TrackPageState extends State<TrackPage> {
                 ButtonBar(
                   alignment: MainAxisAlignment.end,
                   children: [
-                    FilledButton(
+                    ElevatedButton(
                       child: const Text('SAVE'),
                       onPressed: () {
                         setState(() {
