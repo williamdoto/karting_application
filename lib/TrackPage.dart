@@ -9,25 +9,17 @@ import 'package:flutter_google_maps_webservices/places.dart';
 class TrackPage extends StatefulWidget {
   const TrackPage({Key? key}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   @override
   _TrackPageState createState() => _TrackPageState();
 }
 
 class _TrackPageState extends State<TrackPage> {
   List<Map<String, dynamic>> _kartPlaces = [];
-  // ignore: prefer_final_fields
   List<Map<String, dynamic>> _savedPlaces = [];
   late Position _currentPosition;
   String apiKey = 'AIzaSyDINb5jEJSNl4aLsbGCBXSiImHMTnajoGw';
+  final TextEditingController _searchController = TextEditingController();
+  int _radius = 5000; // default radius
 
   @override
   void initState() {
@@ -95,26 +87,40 @@ class _TrackPageState extends State<TrackPage> {
   }
 
   void _fetchKartPlaces() async {
-    String keyword = 'karting tracks';
-    int radius = 5000;
+    String baseSearch = 'karting tracks';
+    String keyword = _searchController.text.isEmpty
+        ? baseSearch
+        : '${_searchController.text} $baseSearch';
 
     String url =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition.latitude},${_currentPosition.longitude}&radius=$radius&keyword=$keyword&key=$apiKey';
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition.latitude},${_currentPosition.longitude}&radius=$_radius&keyword=$keyword&key=$apiKey';
 
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['status'] == 'OK') {
+      if (data['status'] == 'OK' && data['results'].isNotEmpty) {
         List results = data['results'];
         setState(() {
           _kartPlaces = results.cast<Map<String, dynamic>>();
         });
       } else {
-        // Handle error
+        // Clear the list if there are no results or an error occurs
+        setState(() {
+          _kartPlaces.clear();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No results found')),
+          );
+        });
       }
     } else {
-      // Handle error
+      // Clear the list if there's an error
+      setState(() {
+        _kartPlaces.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error occurred. Please try again.')),
+        );
+      });
     }
   }
 
@@ -123,6 +129,51 @@ class _TrackPageState extends State<TrackPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tracks Around You'),
+        bottom: PreferredSize(
+          preferredSize:
+              const Size.fromHeight(60.0), // Adjust this to your needs
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: SearchBar(
+              controller: _searchController,
+              hintText: "Search",
+              leading: const Icon(Icons.search),
+              trailing: <Widget>[
+                DropdownButton<int>(
+                  value: _radius,
+                  hint: const Text('Distance'),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 5000,
+                      child: Text('5 km'),
+                    ),
+                    DropdownMenuItem(
+                      value: 10000,
+                      child: Text('10 km'),
+                    ),
+                    DropdownMenuItem(
+                      value: 20000,
+                      child: Text('20 km'),
+                    ),
+                    DropdownMenuItem(
+                      value: 30000,
+                      child: Text('30 km'),
+                    ),
+                  ],
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _radius = newValue!;
+                      _fetchKartPlaces(); // Fetch kart places whenever the user changes the radius
+                    });
+                  },
+                ),
+              ],
+              onChanged: (_) {
+                _fetchKartPlaces(); // Fetch kart places whenever the user submits a search
+              },
+            ),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: _kartPlaces.length,
