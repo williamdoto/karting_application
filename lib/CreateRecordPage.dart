@@ -32,6 +32,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
       user = currentUser;
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {

@@ -6,6 +6,9 @@ import 'package:karting_application/main.dart';
 import 'package:karting_application/TrackDetail.dart';
 import 'dart:convert';
 import 'package:flutter_google_maps_webservices/places.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage({Key? key}) : super(key: key);
@@ -21,11 +24,22 @@ class _TrackPageState extends State<TrackPage> {
   String apiKey = 'AIzaSyDINb5jEJSNl4aLsbGCBXSiImHMTnajoGw';
   final TextEditingController _searchController = TextEditingController();
   int _radius = 5000; // default radius
+  final _auth = FirebaseAuth.instance;
+  late User user;
+  late Future<void> _fetchUserFuture;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserFuture = _fetchUser();
     _requestLocationPermission();
+  }
+
+  Future<void> _fetchUser() async {
+    User currentUser = _auth.currentUser!;
+    setState(() {
+      user = currentUser;
+    });
   }
 
   void _requestLocationPermission() async {
@@ -131,43 +145,43 @@ class _TrackPageState extends State<TrackPage> {
       appBar: AppBar(
         toolbarHeight: 120,
         title: SearchBar(
-              controller: _searchController,
-              hintText: "Search",
-              leading: const Icon(Icons.search),
-              trailing: <Widget>[
-                DropdownButton<int>(
-                  value: _radius,
-                  hint: const Text('Distance'),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 5000,
-                      child: Text('5 km'),
-                    ),
-                    DropdownMenuItem(
-                      value: 10000,
-                      child: Text('10 km'),
-                    ),
-                    DropdownMenuItem(
-                      value: 20000,
-                      child: Text('20 km'),
-                    ),
-                    DropdownMenuItem(
-                      value: 30000,
-                      child: Text('30 km'),
-                    ),
-                  ],
-                  onChanged: (int? newValue) {
-                    setState(() {
-                      _radius = newValue!;
-                      _fetchKartPlaces(); // Fetch kart places whenever the user changes the radius
-                    });
-                  },
+          controller: _searchController,
+          hintText: "Search",
+          leading: const Icon(Icons.search),
+          trailing: <Widget>[
+            DropdownButton<int>(
+              value: _radius,
+              hint: const Text('Distance'),
+              items: const [
+                DropdownMenuItem(
+                  value: 5000,
+                  child: Text('5 km'),
+                ),
+                DropdownMenuItem(
+                  value: 10000,
+                  child: Text('10 km'),
+                ),
+                DropdownMenuItem(
+                  value: 20000,
+                  child: Text('20 km'),
+                ),
+                DropdownMenuItem(
+                  value: 30000,
+                  child: Text('30 km'),
                 ),
               ],
-              onChanged: (_) {
-                _fetchKartPlaces(); // Fetch kart places whenever the user submits a search
+              onChanged: (int? newValue) {
+                setState(() {
+                  _radius = newValue!;
+                  _fetchKartPlaces(); // Fetch kart places whenever the user changes the radius
+                });
               },
             ),
+          ],
+          onChanged: (_) {
+            _fetchKartPlaces(); // Fetch kart places whenever the user submits a search
+          },
+        ),
       ),
       body: ListView.builder(
         itemCount: _kartPlaces.length,
@@ -178,80 +192,117 @@ class _TrackPageState extends State<TrackPage> {
               : null;
           String photoUrl =
               "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$apiKey";
-          return GestureDetector( // Wrap the Card widget with a GestureDetector
-          onTap: () {
-            // Navigate to the TrackDetail screen with the selected kart place
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TrackDetail(kartPlace: _kartPlaces[index]),
-              ),
-            );
-          },
-          child: Card(
-            elevation: 10,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                photoReference != null
-                    ? Image.network(
-                        photoUrl,
-                        fit: BoxFit.cover,
-                        height: 150.0,
-                        width: double.infinity,
-                      )
-                    : const SizedBox(
-                        height: 150.0,
-                        width: double.infinity,
-                        child: Icon(
-                          Icons.directions_car,
-                          size: 64.0,
-                          color: Colors.grey,
+          return GestureDetector(
+              // Wrap the Card widget with a GestureDetector
+              onTap: () {
+                // Navigate to the TrackDetail screen with the selected kart place
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TrackDetail(kartPlace: _kartPlaces[index]),
+                  ),
+                );
+              },
+              child: Card(
+                elevation: 10,
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    photoReference != null
+                        ? Image.network(
+                            photoUrl,
+                            fit: BoxFit.cover,
+                            height: 150.0,
+                            width: double.infinity,
+                          )
+                        : const SizedBox(
+                            height: 150.0,
+                            width: double.infinity,
+                            child: Icon(
+                              Icons.directions_car,
+                              size: 64.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        _kartPlaces[index]['name'],
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    _kartPlaces[index]['name'],
-                    style: const TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    _kartPlaces[index]['vicinity'],
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        _kartPlaces[index]['vicinity'],
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.grey[600],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                ButtonBar(
-                  alignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      child: const Text('SAVE'),
-                      onPressed: () {
-                        setState(() {
-                          _savedPlaces.add(_kartPlaces[index]);
-                        });
-                      },
+                    ButtonBar(
+                      alignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          child: const Text('SAVE'),
+                          onPressed: () {
+                            FirebaseFirestore.instance
+                                .collection('User')
+                                .doc(user.uid)
+                                .collection('SavedTracks')
+                                .where('trackData.name',
+                                    isEqualTo: _kartPlaces[index]['name'])
+                                .get()
+                                .then((querySnapshot) {
+                              if (querySnapshot.docs.isEmpty) {
+                                // Save track to Firestore
+                                FirebaseFirestore.instance
+                                    .collection('User')
+                                    .doc(user.uid)
+                                    .collection('SavedTracks')
+                                    .add({
+                                  'trackData': _kartPlaces[index],
+                                }).then((value) {
+                                  setState(() {
+                                    _savedPlaces.add(_kartPlaces[index]);
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Saved Successfully!')),
+                                  );
+                                }).catchError((error) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Failed to save. Please try again.')),
+                                  );
+                                });
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Track already saved.')),
+                                );
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ));
+              ));
         },
       ),
     );

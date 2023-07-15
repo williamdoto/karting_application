@@ -5,15 +5,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Speed Trap'),
+      ),
+      body: Center(
+        child: 
           Text(
             'Home Page',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
-        ],
       ),
     );
   }
