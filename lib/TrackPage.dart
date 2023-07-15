@@ -129,6 +129,7 @@ class _TrackPageState extends State<TrackPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 120,
         title: SearchBar(
               controller: _searchController,
               hintText: "Search",
