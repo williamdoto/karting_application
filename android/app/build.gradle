@@ -60,3 +60,8 @@ android {
 flutter {
     source '../..'
 }
+
+// START: FlutterFire Configuration
+// This should be the very last line of the file.
+apply plugin: 'com.google.gms.google-services'
+// END: FlutterFire Configuration

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:karting_application/firebase_options.dart';
-import 'package:karting_application/models/user_model.dart';
 import 'package:karting_application/HomePage.dart';
 import 'package:karting_application/TrackPage.dart';
 import 'package:karting_application/RecordPage.dart';
 import 'package:karting_application/CreateRecordPage.dart';
-import 'package:uuid/uuid.dart';
+import 'LoginPage.dart';
+import 'SignUpPage.dart';
+import 'ForgotPasswordPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,30 +20,21 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user = User(id: generateUserId()); // Generate the user ID dynamically
-    return ChangeNotifierProvider<User>.value(
-      value: user,
-      child: MaterialApp(
-        title: 'Speed Trap',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => MyHomePage(),
-          '/createRecord': (context) {
-            final user = Provider.of<User>(context, listen: false);
-            return CreateRecordPage(userId: user.id);
-          },
-        },
+    return MaterialApp(
+      title: 'Speed Trap',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      initialRoute: '/', // Set the LoginPage as the initial route
+      routes: {
+        '/': (context) => LoginPage(), // The LoginPage is now the first page seen by the user
+        '/home': (context) => MyHomePage(), // HomePage can be accessed using Navigator.pushNamed(context, '/home')
+        '/signup': (context) => SignUpPage(),
+        '/forgetpassword': (context) => ForgotPasswordPage(),
+        '/createRecord': (context) => CreateRecordPage(), // CreateRecordPage can be accessed using Navigator.pushNamed(context, '/createRecord')
+      },
     );
-  }
-
-  String generateUserId() {
-    final uuid = Uuid();
-    return uuid.v4();
   }
 }
 
@@ -57,9 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _screens = [
     HomePage(),
     TrackPage(),
-    Consumer<User>(
-      builder: (context, user, child) => RecordPage(userId: user.id),
-    ),
+    RecordPage(),
   ];
 
   @override
