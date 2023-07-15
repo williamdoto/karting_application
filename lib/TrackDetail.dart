@@ -49,25 +49,27 @@ class _TrackDetailState extends State<TrackDetail> {
     MapsLauncher.launchQuery(widget.kartPlace['name']);
   }
 
-Future<void> fetchPlaceDetails(String placeId) async {
-  String apiKey = 'AIzaSyDINb5jEJSNl4aLsbGCBXSiImHMTnajoGw'; // Enter your Google API Key
+  Future<void> fetchPlaceDetails(String placeId) async {
+    String apiKey =
+        'AIzaSyDINb5jEJSNl4aLsbGCBXSiImHMTnajoGw'; // Enter your Google API Key
 
-  final response = await http.get(
-    Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=formatted_phone_number,website&key=$apiKey',
-    ),
-  );
+    final response = await http.get(
+      Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=formatted_phone_number,website&key=$apiKey',
+      ),
+    );
 
-  if (response.statusCode == 200) {
-    print('API Response: ${response.body}'); // Add this line to print the entire API response
+    if (response.statusCode == 200) {
+      print(
+          'API Response: ${response.body}'); // Add this line to print the entire API response
 
-    setState(() {
-      placeDetails = jsonDecode(response.body)['result'];
-    });
-  } else {
-    throw Exception('Failed to load place details');
+      setState(() {
+        placeDetails = jsonDecode(response.body)['result'];
+      });
+    } else {
+      throw Exception('Failed to load place details');
+    }
   }
-}
 
   void saveTrack() {
     if (!isTrackAlreadySaved) {
@@ -100,7 +102,8 @@ Future<void> fetchPlaceDetails(String placeId) async {
 
   @override
   Widget build(BuildContext context) {
-     String? phoneNumber = placeDetails != null ? placeDetails!['formatted_phone_number'] : 'N/A';
+    String? phoneNumber =
+        placeDetails != null ? placeDetails!['formatted_phone_number'] : 'N/A';
     String? website = placeDetails != null ? placeDetails!['website'] : 'N/A';
 
     String apiKey =
@@ -113,6 +116,13 @@ Future<void> fetchPlaceDetails(String placeId) async {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.kartPlace['name']),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.favorite,
+                color: isTrackAlreadySaved ? Colors.red : Colors.grey),
+            onPressed: saveTrack,
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -149,7 +159,7 @@ Future<void> fetchPlaceDetails(String placeId) async {
                 ),
                 ElevatedButton(
                   onPressed: saveTrack,
-                  child: const Text('Save'),
+                  child: const Text('Call'),
                 ),
               ],
             ),
