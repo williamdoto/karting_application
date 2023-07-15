@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:karting_application/main.dart';
+import 'package:karting_application/TrackDetail.dart';
 import 'dart:convert';
 import 'package:flutter_google_maps_webservices/places.dart';
 
@@ -176,7 +177,17 @@ class _TrackPageState extends State<TrackPage> {
               : null;
           String photoUrl =
               "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$apiKey";
-          return Card(
+          return GestureDetector( // Wrap the Card widget with a GestureDetector
+          onTap: () {
+            // Navigate to the TrackDetail screen with the selected kart place
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TrackDetail(kartPlace: _kartPlaces[index]),
+              ),
+            );
+          },
+          child: Card(
             elevation: 10,
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
@@ -239,7 +250,7 @@ class _TrackPageState extends State<TrackPage> {
                 ),
               ],
             ),
-          );
+          ));
         },
       ),
     );
