@@ -15,20 +15,39 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Forgot Password')),
-      body: Form(
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        alignment: Alignment.center,
+        child: Form(
         key: _formKey,
         child: Column(
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget> [
+            SizedBox(height: 40),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black)),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: Colors.grey,
+                    )),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
             ),
+            SizedBox(height: 20),
             ElevatedButton(
               child: Text('Send Reset Email'),
               onPressed: () {
@@ -41,6 +60,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               },
             ),
           ],
+        ),
         ),
       ),
     );
