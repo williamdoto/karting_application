@@ -116,11 +116,27 @@ class _TrackPageState extends State<TrackPage> {
       Map<String, dynamic> data = jsonDecode(response.body);
       if (data['status'] == 'OK' && data['results'].isNotEmpty) {
         List results = data['results'];
+        for (var place in results) {
+          final detailsResponse = await http.get(Uri.parse(
+              'https://maps.googleapis.com/maps/api/place/details/json?place_id=${place['place_id']}&fields=rating,opening_hours&key=$apiKey'));
+          if (detailsResponse.statusCode == 200) {
+            Map<String, dynamic> detailsData = jsonDecode(detailsResponse.body);
+            if (detailsData['result'] != null) {
+              place['rating'] = detailsData['result']['rating'] ?? 'N/A';
+              if (detailsData['result']['opening_hours'] != null) {
+                place['open_now'] =
+                    detailsData['result']['opening_hours']['open_now'] ?? false;
+              } else {
+                place['open_now'] = false;
+              }
+            }
+          }
+        }
+
         setState(() {
           _kartPlaces = results.cast<Map<String, dynamic>>();
         });
       } else {
-        // Clear the list if there are no results or an error occurs
         setState(() {
           _kartPlaces.clear();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +145,6 @@ class _TrackPageState extends State<TrackPage> {
         });
       }
     } else {
-      // Clear the list if there's an error
       setState(() {
         _kartPlaces.clear();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -234,23 +249,27 @@ class _TrackPageState extends State<TrackPage> {
                             ),
                           ),
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        _kartPlaces[index]['name'],
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        _kartPlaces[index]['vicinity'],
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.grey[600],
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _kartPlaces[index]['name'],
+                            style: const TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            _kartPlaces[index]['vicinity'],
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                              'Rating: ${_kartPlaces[index]['rating']} | Open Now: ${_kartPlaces[index]['open_now'] ? 'Yes' : 'No'}'),
+                        ],
                       ),
                     ),
                     ButtonBar(

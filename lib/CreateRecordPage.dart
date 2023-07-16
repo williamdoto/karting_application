@@ -4,6 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class CreateRecordPage extends StatefulWidget {
+  final String? trackName;
+
+  const CreateRecordPage({Key? key, this.trackName}) : super(key: key);
   @override
   _CreateRecordPageState createState() => _CreateRecordPageState();
 }
@@ -24,6 +27,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
   void initState() {
     super.initState();
     _fetchUserFuture = _fetchUser();
+    _trackName = widget.trackName ?? '';
   }
 
   Future<void> _fetchUser() async {
@@ -32,7 +36,6 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
       user = currentUser;
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +47,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              automaticallyImplyLeading: false,
-              title: Text('Add Record')
-            ),
+                automaticallyImplyLeading: false, title: Text('Add Record')),
             body: Form(
               key: _formKey,
               child: ListView(
@@ -57,6 +58,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                     decoration: InputDecoration(
                       labelText: 'Track Name',
                     ),
+                    initialValue: _trackName,
                     onChanged: (value) {
                       setState(() {
                         _trackName = value;
@@ -208,4 +210,3 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
     );
   }
 }
-

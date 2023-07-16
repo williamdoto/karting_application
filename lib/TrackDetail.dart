@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:karting_application/CreateRecordPage.dart';
 
 class TrackDetail extends StatefulWidget {
   final Map<String, dynamic> kartPlace;
@@ -86,8 +87,29 @@ class _TrackDetailState extends State<TrackDetail> {
     }
   }
 
-  void saveTrack() {
-    if (!isTrackAlreadySaved) {
+  void toggleTrackSaved() {
+    if (isTrackAlreadySaved) {
+      // Unsave track from Firestore
+      FirebaseFirestore.instance
+          .collection('User')
+          .doc(user.uid)
+          .collection('SavedTracks')
+          .where('trackData.name', isEqualTo: widget.kartPlace['name'])
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.delete();
+        });
+
+        setState(() {
+          isTrackAlreadySaved = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unsaved Successfully!')),
+        );
+      });
+    } else {
       // Save track to Firestore
       FirebaseFirestore.instance
           .collection('User')
@@ -108,10 +130,6 @@ class _TrackDetailState extends State<TrackDetail> {
           const SnackBar(content: Text('Failed to save. Please try again.')),
         );
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Track already saved.')),
-      );
     }
   }
 
@@ -121,11 +139,7 @@ class _TrackDetailState extends State<TrackDetail> {
         placeDetails != null ? placeDetails!['formatted_phone_number'] : 'N/A';
     late String? website =
         placeDetails != null ? placeDetails!['website'] : 'N/A';
-    //     String? openingHours = placeDetails != null
-    //     ? (placeDetails!['opening_hours']['open_now'] ? 'Open Now' : 'Closed')
-    //     : 'N/A';
-    // double? rating = placeDetails != null ? placeDetails!['rating'] : 'N/A';
-    // String? priceLevel = placeDetails != null ? placeDetails!['price_level'].toString() : 'N/A';
+
     late double? rating = placeDetails != null ? placeDetails!['rating'] : 0.0;
     // Fetch opening hours
     List<dynamic>? openingHours = placeDetails != null
@@ -149,7 +163,7 @@ class _TrackDetailState extends State<TrackDetail> {
             IconButton(
               icon: Icon(Icons.favorite,
                   color: isTrackAlreadySaved ? Colors.red : Colors.grey),
-              onPressed: saveTrack,
+              onPressed: toggleTrackSaved,
             ),
           ],
         ),
@@ -181,22 +195,34 @@ class _TrackDetailState extends State<TrackDetail> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    ElevatedButton(
-                      child: const Text('Directions'),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.directions),
+                      label: const Text('Directions'),
                       onPressed: () => _launchURL(),
                     ),
-                    ElevatedButton(
-                      child: const Text('Record'),
-                      onPressed: () {},
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.book),
+                      label: const Text('Record'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateRecordPage(
+                                trackName: widget.kartPlace["name"]),
+                          ),
+                        );
+                      },
                     ),
-                    ElevatedButton(
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.phone),
                       onPressed: () => _launchCall(phoneNumber),
-                      child: const Text('Call'),
+                      label: const Text('Call'),
                     ),
                   ],
                 ),
               ),
               // Track Details
+              const SizedBox(height: 5),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -204,45 +230,46 @@ class _TrackDetailState extends State<TrackDetail> {
                   children: <Widget>[
                     Text(
                       'Track Detail',
-                      style: Theme.of(context).textTheme.headline4,
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 20),
                     Text(
                       'Name: ${widget.kartPlace['name']}',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(
                       'Address: ${widget.kartPlace['vicinity']}',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(
                       'Phone: $phoneNumber',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(
                       'Website: $website',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(
                       'Rating: $rating',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
+                    const SizedBox(height: 20),
                     if (openingHours != null) ...[
                       Text(
                         'Opening Hours:',
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       for (var hours in openingHours)
                         Text(
                           hours,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                     ],
                     if (reviews != null) ...[
                       const SizedBox(height: 20),
                       Text(
                         'Reviews:',
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       SizedBox(
                         height: 200,
@@ -260,14 +287,14 @@ class _TrackDetailState extends State<TrackDetail> {
                               onTap: reviewText.length > 100
                                   ? () {
                                       showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return Container(
-                                            padding: EdgeInsets.all(10.0),
-                                            child: Text(reviewText),
-                                          );
-                                        },
-                                      );
+                                          context: context,
+                                          builder: (context) {
+                                            return Container(
+                                              padding: EdgeInsets.all(10.0),
+                                              child: Text(reviewText),
+                                            );
+                                          },
+                                          showDragHandle: true);
                                     }
                                   : null,
                               child: SizedBox(
@@ -283,13 +310,13 @@ class _TrackDetailState extends State<TrackDetail> {
                                           'Reviewer: ${review['author_name']}',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .titleLarge,
+                                              .titleMedium,
                                         ),
                                         Text(
                                           'Rating: ${review['rating']}',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .titleMedium,
+                                              .titleSmall,
                                         ),
                                         Text(
                                           'Review: $truncatedReviewText',
