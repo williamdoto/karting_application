@@ -43,7 +43,10 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
           return Center(child: CircularProgressIndicator());
         } else {
           return Scaffold(
-            appBar: AppBar(title: Text('Add Record')),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              title: Text('Add Record')
+            ),
             body: Form(
               key: _formKey,
               child: ListView(

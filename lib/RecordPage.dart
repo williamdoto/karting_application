@@ -56,10 +56,15 @@ class _RecordPageState extends State<RecordPage> {
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CreateRecordPage()),  // Removed userId parameter
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return FractionallySizedBox(
+                          heightFactor: 0.8,
+                          child: CreateRecordPage(),
+                        );
+                       }, // Removed userId parameter
                     );
                   },
                 ),
