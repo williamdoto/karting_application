@@ -8,6 +8,7 @@ import 'package:karting_application/CreateRecordPage.dart';
 import 'LoginPage.dart';
 import 'SignUpPage.dart';
 import 'ForgotPasswordPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,10 +30,24 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+            home: StreamBuilder<User?>(
+        stream: _auth.authStateChanges(),
+        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.data?.uid == null) {
+              // If the user is not logged in, return the LoginPage widget
+              return LoginPage();
+            } else {
+              // If the user is logged in, return the MyHomePage widget
+              return MyHomePage();
+            }
+          }
+          // While the connection to Firebase is established, show a loading spinner
+          return CircularProgressIndicator();
+        },
+      ),
       initialRoute: '/', // Set the LoginPage as the initial route
       routes: {
-        '/': (context) => LoginPage(), // The LoginPage is now the first page seen by the user
-        '/home': (context) => MyHomePage(), // HomePage can be accessed using Navigator.pushNamed(context, '/home')
         '/signup': (context) => SignUpPage(),
         '/forgetpassword': (context) => ForgotPasswordPage(),
         '/createRecord': (context) => CreateRecordPage(), // CreateRecordPage can be accessed using Navigator.pushNamed(context, '/createRecord')
