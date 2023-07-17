@@ -15,6 +15,8 @@ class _RecordPageState extends State<RecordPage> {
   final _searchController = StreamController<String>();
   final _auth = FirebaseAuth.instance;
   late User user;
+  String _sortingField = 'recordDate';
+  String _sortingOrder = 'asc';
 
   @override
   void initState() {
@@ -65,50 +67,140 @@ class _RecordPageState extends State<RecordPage> {
                           heightFactor: 0.8,
                           child: CreateRecordPage(),
                         );
-                       }, // Removed userId parameter
+                      },
                     );
                   },
                 ),
               ],
             ),
-            body: StreamBuilder<String>(
-              stream: _searchController.stream,
-              builder: (context, snapshot) {
-                return StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(user.uid)
-                      .collection('Record')
-                      .orderBy('trackName')
-                      .startAt([snapshot.data ?? ''])
-                      .endAt([snapshot.data != null ? '${snapshot.data}~' : '\uf8ff'])
-                      .snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                children: [
+                  DropdownButtonFormField(
+                    items: [
+                      DropdownMenuItem(
+                          value: 'recordDate', child: Text('Date')),
+                      DropdownMenuItem(
+                          value: 'recordFastestLap',
+                          child: Text('Fastest Lap')),
+                      DropdownMenuItem(
+                          value: 'recordAvgTime', child: Text('Avg Time')),
+                      DropdownMenuItem(
+                          value: 'recordTrackName', child: Text('Track Name')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _sortingField = value.toString();
+                      });
+                    },
+                    value: _sortingField,
+                  ),
+                  DropdownButtonFormField(
+                    items: [
+                      DropdownMenuItem(value: 'asc', child: Text('Ascending')),
+                      DropdownMenuItem(
+                          value: 'desc', child: Text('Descending')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _sortingOrder = value.toString();
+                      });
+                    },
+                    value: _sortingOrder,
+                  ),
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('User')
+                          .doc(user.uid)
+                          .collection('Record')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Something went wrong');
+                        }
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
 
-                    if (snapshot.data!.docs.isEmpty) {
-                      return Center(child: Text('No records found'));
-                    } else {
-                      return ListView(
-                        children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                          Record record = Record.fromDocumentSnapshot(document);
-                          return RecordCard(record: record);
-                        }).toList(),
-                      );
-                    }
-                  },
-                );
-              },
+                        if (snapshot.data!.docs.isEmpty) {
+                          return Center(child: Text('No records found'));
+                        } else {
+                          List<Record> records = snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            return Record.fromDocumentSnapshot(document);
+                          }).toList();
+
+                          records.sort((a, b) {
+                            if (_sortingField == 'recordTrackName') {
+                              return _sortingOrder == 'asc'
+                                  ? a.trackName
+                                      .toLowerCase()
+                                      .compareTo(b.trackName.toLowerCase())
+                                  : b.trackName
+                                      .toLowerCase()
+                                      .compareTo(a.trackName.toLowerCase());
+                            }
+
+                            double aValue = 0.0;
+                            double bValue = 0.0;
+
+                            switch (_sortingField) {
+                              case 'recordFastestLap':
+                                aValue = _convertTimeStringToSeconds(
+                                    a.recordFastestLap);
+                                bValue = _convertTimeStringToSeconds(
+                                    b.recordFastestLap);
+                                break;
+                              case 'recordAvgTime':
+                                aValue = _convertTimeStringToSeconds(
+                                    a.recordAvgTime);
+                                bValue = _convertTimeStringToSeconds(
+                                    b.recordAvgTime);
+                                break;
+                              case 'recordDate':
+                                aValue = a.recordDate.millisecondsSinceEpoch
+                                    .toDouble();
+                                bValue = b.recordDate.millisecondsSinceEpoch
+                                    .toDouble();
+                                break;
+                            }
+
+                            return _sortingOrder == 'asc'
+                                ? aValue.compareTo(bValue)
+                                : bValue.compareTo(aValue);
+                          });
+
+                          return ListView(
+                            children: records.map((Record record) {
+                              return RecordCard(record: record);
+                            }).toList(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
       },
     );
+  }
+
+  double _convertTimeStringToSeconds(String timeString) {
+    var timeParts = timeString.split(':');
+    if (timeParts.length > 1) {
+      var minutePart = double.parse(timeParts[0]);
+      var secondPart = double.parse(timeParts[1]);
+      return minutePart * 60 + secondPart;
+    } else {
+      return double.parse(timeString);
+    }
   }
 }
