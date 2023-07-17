@@ -191,9 +191,10 @@ class _TrackDetailState extends State<TrackDetail> {
               const SizedBox(height: 20),
               // Buttons
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.05),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     ElevatedButton.icon(
                       icon: const Icon(Icons.directions),
@@ -221,6 +222,7 @@ class _TrackDetailState extends State<TrackDetail> {
                   ],
                 ),
               ),
+
               // Track Details
               const SizedBox(height: 5),
               Padding(
@@ -230,7 +232,10 @@ class _TrackDetailState extends State<TrackDetail> {
                   children: <Widget>[
                     Text(
                       'Track Detail',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -256,8 +261,11 @@ class _TrackDetailState extends State<TrackDetail> {
                     const SizedBox(height: 20),
                     if (openingHours != null) ...[
                       Text(
-                        'Opening Hours:',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        'Open Hours',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(fontWeight: FontWeight.w600),
                       ),
                       for (var hours in openingHours)
                         Text(
@@ -268,8 +276,11 @@ class _TrackDetailState extends State<TrackDetail> {
                     if (reviews != null) ...[
                       const SizedBox(height: 20),
                       Text(
-                        'Reviews:',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        'Reviews',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(fontWeight: FontWeight.w600),
                       ),
                       SizedBox(
                         height: 200,
@@ -289,9 +300,14 @@ class _TrackDetailState extends State<TrackDetail> {
                                       showModalBottomSheet(
                                           context: context,
                                           builder: (context) {
-                                            return Container(
-                                              padding: EdgeInsets.all(10.0),
-                                              child: Text(reviewText),
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 20.0),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Text(reviewText),
+                                              ),
                                             );
                                           },
                                           showDragHandle: true);
@@ -334,8 +350,6 @@ class _TrackDetailState extends State<TrackDetail> {
                         ),
                       ),
                     ]
-
-                    // ...you can add more details here
 
                     // ...you can add more details here
                   ],

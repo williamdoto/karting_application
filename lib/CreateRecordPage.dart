@@ -18,10 +18,10 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
   late Future<void> _fetchUserFuture;
   String _trackName = '';
   DateTime _recordDate = DateTime.now();
-  int _recordLap = 0;
+  String _recordLap = '0';
   String _recordAvgTime = '';
   String _recordFastestLap = '';
-  int _recordPos = 0;
+  String _recordPos = '0';
 
   @override
   void initState() {
@@ -108,7 +108,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
-                        _recordLap = int.parse(value);
+                        _recordLap = value;
                       });
                     },
                     validator: (value) {
@@ -167,7 +167,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
-                        _recordPos = int.parse(value);
+                        _recordPos = value;
                       });
                     },
                     validator: (value) {
@@ -192,10 +192,10 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                             .add({
                           'trackName': _trackName,
                           'recordDate': _recordDate,
-                          'recordLap': _recordLap,
+                          'recordLap': int.parse(_recordLap),
                           'recordAvgTime': _recordAvgTime,
                           'recordFastestLap': _recordFastestLap,
-                          'recordPos': _recordPos,
+                          'recordPos': int.parse(_recordPos),
                         });
                         Navigator.pop(context);
                       }
