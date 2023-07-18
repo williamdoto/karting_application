@@ -23,6 +23,8 @@ class MyApp extends StatelessWidget {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -44,14 +46,14 @@ class MyApp extends StatelessWidget {
             }
           }
           // While the connection to Firebase is established, show a loading spinner
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         },
       ),
       initialRoute: '/', // Set the LoginPage as the initial route
       routes: {
         '/signup': (context) => SignUpPage(),
         '/forgetpassword': (context) => ForgotPasswordPage(),
-        '/createRecord': (context) => CreateRecordPage(),
+        '/createRecord': (context) => const CreateRecordPage(),
         '/events':(context) => EventsPage() // CreateRecordPage can be accessed using Navigator.pushNamed(context, '/createRecord')
       },
     );
@@ -66,8 +68,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
-    HomePage(),
-    TrackPage(),
+    const HomePage(),
+    const TrackPage(),
     RecordPage(),
     EventsPage(),
   ];
@@ -84,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',

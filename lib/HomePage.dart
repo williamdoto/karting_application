@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                             maxHeight:
-                                MediaQuery.of(context).size.height * 0.23,
+                                MediaQuery.of(context).size.height * 0.24,
                             minWidth: MediaQuery.of(context).size.width * 0.93,
                             maxWidth: MediaQuery.of(context).size.width * 0.95),
                         child: Card(
@@ -186,36 +186,36 @@ class _HomePageState extends State<HomePage> {
                                           color: Colors.black)),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Text(
                                       'Total Podium Finishes: ${podiumFinishes.length}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black)),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Text('Total Laps: $totalLaps',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black)),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Text(
                                       'Average Finishing Position: ${averageFinishPosition.toStringAsFixed(2)}/${averageTotalRacers.toStringAsFixed(2)}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black)),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
                                   child: Text(
                                       'Average Gap to Pole: ${averageGapToPole.toStringAsFixed(2)}',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black)),
@@ -227,36 +227,39 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
 
-                    return Column(
-                      children: [
-                        stats,
-                        if (podiumFinishes.isNotEmpty) ...[
-                          SizedBox(height: 10),
-                          Text('Podium Finishes',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          CarouselSlider.builder(
-                            itemCount: podiumFinishes.length,
-                            itemBuilder: (context, index, realIdx) {
-                              PodiumFinish finish = podiumFinishes[index];
-                              return Card(
-                                child: ListTile(
-                                  title: Text(finish.trackName),
-                                  subtitle: Text(
-                                      'Position: ${finish.recordPos}\nDate: ${finish.recordDate.toString()}'),
-                                ),
-                              );
-                            },
-                            options: CarouselOptions(
-                                autoPlay: false,
-                                enlargeCenterPage: true,
-                                enableInfiniteScroll: false),
-                          ),
-                        ]
-                      ],
-                    );
+return Column(
+  children: [
+    stats,
+    if (podiumFinishes.isNotEmpty) ...[
+      const SizedBox(height: 13),
+      const Text('Podium Finishes',
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black)),
+      CarouselSlider.builder(
+        itemCount: podiumFinishes.length,
+        itemBuilder: (context, index, realIdx) {
+          PodiumFinish finish = podiumFinishes[index];
+          return Card(
+            child: ListTile(
+              title: Text(finish.trackName),
+              subtitle: Text(
+                  'Position: ${finish.recordPos}\nDate: ${finish.recordDate.toString()}'),
+            ),
+          );
+        },
+        options: CarouselOptions(
+            autoPlay: false,
+            enlargeCenterPage: true,
+            enableInfiniteScroll: false,
+            aspectRatio: 5/2, // Adjust this to change the height of the cards
+        ),
+      ),
+    ]
+  ],
+);
+
                   },
                 );
               },
@@ -280,7 +283,7 @@ class _HomePageState extends State<HomePage> {
 
                 return Column(
                   children: [
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 13),
                     const Text('Saved Tracks',
                         style: TextStyle(
                             fontSize: 18,
@@ -292,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                     if (savedTracks.isNotEmpty)
                       Container(
                         height: MediaQuery.of(context).size.height *
-                            0.23, // Adjust this value as needed
+                            0.235, // Adjust this value as needed
                         decoration: const BoxDecoration(
                           color: Colors.white,
                         ),

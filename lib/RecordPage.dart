@@ -7,6 +7,8 @@ import 'package:karting_application/models/record_model.dart';
 import 'dart:async';
 
 class RecordPage extends StatefulWidget {
+  const RecordPage({super.key});
+
   @override
   _RecordPageState createState() => _RecordPageState();
 }
@@ -43,7 +45,7 @@ class _RecordPageState extends State<RecordPage> {
       future: _fetchUser(),
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else {
           return Scaffold(
             appBar: AppBar(
@@ -57,13 +59,13 @@ class _RecordPageState extends State<RecordPage> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
                       builder: (BuildContext context) {
-                        return FractionallySizedBox(
+                        return const FractionallySizedBox(
                           heightFactor: 0.8,
                           child: CreateRecordPage(),
                         );
@@ -78,7 +80,7 @@ class _RecordPageState extends State<RecordPage> {
               child: Column(
                 children: [
                   DropdownButtonFormField(
-                    items: [
+                    items: const [
                       DropdownMenuItem(
                           value: 'recordDate', child: Text('Date')),
                       DropdownMenuItem(
@@ -97,7 +99,7 @@ class _RecordPageState extends State<RecordPage> {
                     value: _sortingField,
                   ),
                   DropdownButtonFormField(
-                    items: [
+                    items: const [
                       DropdownMenuItem(value: 'asc', child: Text('Ascending')),
                       DropdownMenuItem(
                           value: 'desc', child: Text('Descending')),
@@ -119,16 +121,16 @@ class _RecordPageState extends State<RecordPage> {
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {
-                          return Text('Something went wrong');
+                          return const Text('Something went wrong');
                         }
 
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         }
 
                         if (snapshot.data!.docs.isEmpty) {
-                          return Center(child: Text('No records found'));
+                          return const Center(child: Text('No records found'));
                         } else {
                           List<Record> records = snapshot.data!.docs
                               .map((DocumentSnapshot document) {

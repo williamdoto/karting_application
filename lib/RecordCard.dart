@@ -17,17 +17,17 @@ class _RecordCardState extends State<RecordCard> {
   Widget build(BuildContext context) {
     return Card(
       child: ExpansionTile(
-        leading: Icon(Icons.sports_score),
+        leading: const Icon(Icons.sports_score),
         title: Text(
           widget.record.trackName,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18.0,
           ),
         ),
         subtitle: Text(
           'Date: ${DateFormat('yyyy-MM-dd').format(widget.record.recordDate)}',
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
           ),

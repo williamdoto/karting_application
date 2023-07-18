@@ -45,11 +45,11 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
       future: _fetchUserFuture,
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else {
           return Scaffold(
             appBar: AppBar(
-                automaticallyImplyLeading: false, title: Text('Add Record')),
+                automaticallyImplyLeading: false, title: const Text('Add Record')),
             body: Form(
               key: _formKey,
               child: ListView(
@@ -57,7 +57,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                 children: [
                   // Track Name
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Track Name',
                     ),
                     initialValue: _trackName,
@@ -76,7 +76,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
 
                   // Record Date
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Record Date',
                     ),
                     initialValue: DateFormat('yyyy-MM-dd').format(_recordDate),
@@ -104,7 +104,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
 
                   // Record Lap
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Lap Number',
                     ),
                     keyboardType: TextInputType.number,
@@ -123,7 +123,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
 
                   // Avg Time
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Average Time (m:ss.sss or ss.sss)',
                     ),
                     onChanged: (value) {
@@ -143,7 +143,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
 
                   // Fastest Lap
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Fastest Lap Time (m:ss.sss or ss.sss)',
                     ),
                     onChanged: (value) {
@@ -163,7 +163,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
 
                   // Record Position
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Position',
                     ),
                     keyboardType: TextInputType.number,
@@ -180,7 +180,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                     },
                   ),
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Total No. Racers',
                     ),
                     keyboardType: TextInputType.number,
@@ -198,7 +198,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                   ),
                   if (_recordPos != '1')
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Pole Gap (s.sss or ss.sss)',
                       ),
                       onChanged: (value) {
@@ -216,9 +216,9 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                     ),
 
                   // Save Button
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
-                    child: Text('Save Record'),
+                    child: const Text('Save Record'),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         // Save record to Firestore
