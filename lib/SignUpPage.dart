@@ -15,29 +15,29 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sign Up"),
+        title: const Text("Sign Up"),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
         alignment: Alignment.center,
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               TextFormField(
                 decoration: InputDecoration(
                     hintText: "Email",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: const TextStyle(color: Colors.grey),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey)),
+                        borderSide: const BorderSide(color: Colors.grey)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black)),
-                    prefixIcon: Icon(
+                        borderSide: const BorderSide(color: Colors.black)),
+                    prefixIcon: const Icon(
                       Icons.email,
                       color: Colors.grey,
                     )),
@@ -45,20 +45,20 @@ class _SignUpPageState extends State<SignUpPage> {
                     !input!.contains('@') ? 'Please enter a valid email' : null,
                 onSaved: (input) => _email = input!,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: InputDecoration(
                   hintText: "Password",
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: Colors.grey),
                   // labelText: 'Password',
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey)),
+                      borderSide: const BorderSide(color: Colors.grey)),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black)),
-                  prefixIcon: Icon(
+                      borderSide: const BorderSide(color: Colors.black)),
+                  prefixIcon: const Icon(
                     Icons.key,
                     color: Colors.grey,
                   ),
@@ -68,10 +68,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 onSaved: (input) => _password = input!,
                 obscureText: true,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
-                child: Text("Sign Up"),
                 onPressed: _submit,
+                child: const Text("Sign Up"),
               ),
             ],
           ),

@@ -7,7 +7,7 @@ class EventsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Events Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Text(
           'This is the Events Page',
           style: TextStyle(fontSize: 24),
