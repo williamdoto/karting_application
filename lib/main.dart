@@ -7,6 +7,7 @@ import 'package:karting_application/RecordPage.dart';
 import 'package:karting_application/CreateRecordPage.dart';
 import 'LoginPage.dart';
 import 'SignUpPage.dart';
+import 'Eventspage.dart';
 import 'ForgotPasswordPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -50,7 +51,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/signup': (context) => SignUpPage(),
         '/forgetpassword': (context) => ForgotPasswordPage(),
-        '/createRecord': (context) => CreateRecordPage(), // CreateRecordPage can be accessed using Navigator.pushNamed(context, '/createRecord')
+        '/createRecord': (context) => CreateRecordPage(),
+        '/events':(context) => EventsPage() // CreateRecordPage can be accessed using Navigator.pushNamed(context, '/createRecord')
       },
     );
   }
@@ -67,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     HomePage(),
     TrackPage(),
     RecordPage(),
+    EventsPage(),
   ];
 
   @override
@@ -94,7 +97,14 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.emoji_flags),
             label: 'Record',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_events),
+            label: 'Events',
+          )
         ],
+        unselectedItemColor: Colors.grey, // Add this
+        selectedItemColor: Colors.deepPurple, // Add this
+        showUnselectedLabels: true, // Add this line
       ),
     );
   }
