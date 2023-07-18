@@ -42,8 +42,14 @@ class _RecordCardState extends State<RecordCard> {
           ListTile(
             title: Text('Fastest Lap: ${widget.record.recordFastestLap}'),
           ),
+                    ListTile(
+            title: Text('Gap to Pole: ${widget.record.recordPoleGap}'),
+          ),
           ListTile(
             title: Text('Position: ${widget.record.recordPos}'),
+          ),
+                              ListTile(
+            title: Text('Total Racers: ${widget.record.recordTotalRacers}'),
           ),
         ],
       ),

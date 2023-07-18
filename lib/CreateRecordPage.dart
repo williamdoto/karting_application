@@ -22,6 +22,8 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
   String _recordAvgTime = '';
   String _recordFastestLap = '';
   String _recordPos = '0';
+  String _recordPoleGap = '0.000';
+  String _recordTotalRacers = '0';
 
   @override
   void initState() {
@@ -177,6 +179,41 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                       return null;
                     },
                   ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Total No. Racers',
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      setState(() {
+                        _recordTotalRacers = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a position';
+                      }
+                      return null;
+                    },
+                  ),
+                  if (_recordPos != '1')
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Pole Gap (s.sss or ss.sss)',
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _recordPoleGap = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null ||
+                            !RegExp(r'^\d{1,2}\.\d{3}$').hasMatch(value)) {
+                          return 'Please enter a valid time (s.sss or ss.sss)';
+                        }
+                        return null;
+                      },
+                    ),
 
                   // Save Button
                   SizedBox(height: 20),
@@ -196,6 +233,8 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                           'recordAvgTime': _recordAvgTime,
                           'recordFastestLap': _recordFastestLap,
                           'recordPos': int.parse(_recordPos),
+                          'recordPoleGap': _recordPoleGap,
+                          'recordTotalRacers': int.parse(_recordTotalRacers),
                         });
                         Navigator.pop(context);
                       }

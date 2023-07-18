@@ -13,14 +13,18 @@ class PodiumFinish {
   final String recordAvgTime;
   final String recordFastestLap;
   final int recordPos;
-
-  PodiumFinish(
-      {required this.trackName,
-      required this.recordDate,
-      required this.recordLap,
-      required this.recordAvgTime,
-      required this.recordFastestLap,
-      required this.recordPos});
+  final int recordTotalRacers;
+  final double recordPoleGap;
+  PodiumFinish({
+    required this.trackName,
+    required this.recordDate,
+    required this.recordLap,
+    required this.recordAvgTime,
+    required this.recordFastestLap,
+    required this.recordPos,
+    required this.recordTotalRacers,
+    required this.recordPoleGap,
+  });
 }
 
 class HomePage extends StatefulWidget {
@@ -73,16 +77,13 @@ class _HomePageState extends State<HomePage> {
                   .collection('User')
                   .doc(user.uid)
                   .collection('Record')
-                  .where('recordPos', isLessThanOrEqualTo: 3)
-                  .orderBy('recordPos')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                List<PodiumFinish> podiumFinishes =
-                    snapshot.data!.docs.map((doc) {
+                List<PodiumFinish> allFinishes = snapshot.data!.docs.map((doc) {
                   Map<String, dynamic> data =
                       doc.data() as Map<String, dynamic>;
                   return PodiumFinish(
@@ -92,98 +93,147 @@ class _HomePageState extends State<HomePage> {
                     recordAvgTime: data['recordAvgTime'],
                     recordFastestLap: data['recordFastestLap'],
                     recordPos: data['recordPos'],
+                    recordTotalRacers: data['recordTotalRacers'],
+                    recordPoleGap: double.parse(data['recordPoleGap']),
                   );
                 }).toList();
 
-                double totalLaps = podiumFinishes.fold(
-                    0.0, (sum, item) => sum + item.recordLap);
-                double averageFinishPosition = podiumFinishes.fold(
-                        0.0, (sum, item) => sum + item.recordPos) /
-                    podiumFinishes.length;
+                double totalLaps =
+                    allFinishes.fold(0.0, (sum, item) => sum + item.recordLap);
 
-                Widget stats = Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.20,
-                        minWidth: MediaQuery.of(context).size.width * 0.93,
-                        maxWidth: MediaQuery.of(context).size.width * 0.95),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Text('All-Time Stats:',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
+                double averageFinishPosition =
+                    allFinishes.fold(0.0, (sum, item) => sum + item.recordPos) /
+                        allFinishes.length;
+                double averageTotalRacers = allFinishes.fold(
+                        0.0, (sum, item) => sum + item.recordTotalRacers) /
+                    allFinishes.length;
+                double averageGapToPole = allFinishes.fold(
+                        0.0, (sum, item) => sum + item.recordPoleGap) /
+                    allFinishes.length;
+                // Podium finishes
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('User')
+                      .doc(user.uid)
+                      .collection('Record')
+                      .where('recordPos', isLessThanOrEqualTo: 3)
+                      .orderBy('recordPos')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    List<PodiumFinish> podiumFinishes =
+                        snapshot.data!.docs.map((doc) {
+                      Map<String, dynamic> data =
+                          doc.data() as Map<String, dynamic>;
+                      return PodiumFinish(
+                        trackName: data['trackName'],
+                        recordDate: data['recordDate'].toDate(),
+                        recordLap: data['recordLap'],
+                        recordAvgTime: data['recordAvgTime'],
+                        recordFastestLap: data['recordFastestLap'],
+                        recordPos: data['recordPos'],
+                        recordTotalRacers: data['recordTotalRacers'],
+                        recordPoleGap: double.parse(data['recordPoleGap']),
+                      );
+                    }).toList();
+
+                    Widget stats = Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight:
+                                MediaQuery.of(context).size.height * 0.23,
+                            minWidth: MediaQuery.of(context).size.width * 0.93,
+                            maxWidth: MediaQuery.of(context).size.width * 0.95),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Text('All-Time Stats:',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                      'Total Podium Finishes: ${podiumFinishes.length}',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Text('Total Laps: $totalLaps',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                      'Average Finishing Position: ${averageFinishPosition.toStringAsFixed(2)}/${averageTotalRacers.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                      'Average Gap to Pole: ${averageGapToPole.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black)),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Text(
-                                  'Total Podium Finishes: ${podiumFinishes.length}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Text('Total Laps: $totalLaps',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Text(
-                                  'Average Finishing Position: ${averageFinishPosition.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black)),
-                            ),
-                            // You can add more stats here...
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
+                    );
 
-                return Column(
-                  children: [
-                    stats,
-                    if (podiumFinishes.isNotEmpty) ...[
-                      SizedBox(height: 10),
-                      Text('Podium Finishes',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      CarouselSlider.builder(
-                        itemCount: podiumFinishes.length,
-                        itemBuilder: (context, index, realIdx) {
-                          PodiumFinish finish = podiumFinishes[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(finish.trackName),
-                              subtitle: Text(
-                                  'Position: ${finish.recordPos}\nDate: ${finish.recordDate.toString()}'),
-                            ),
-                          );
-                        },
-                        options: CarouselOptions(
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: false),
-                      ),
-                    ]
-                  ],
+                    return Column(
+                      children: [
+                        stats,
+                        if (podiumFinishes.isNotEmpty) ...[
+                          SizedBox(height: 10),
+                          Text('Podium Finishes',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          CarouselSlider.builder(
+                            itemCount: podiumFinishes.length,
+                            itemBuilder: (context, index, realIdx) {
+                              PodiumFinish finish = podiumFinishes[index];
+                              return Card(
+                                child: ListTile(
+                                  title: Text(finish.trackName),
+                                  subtitle: Text(
+                                      'Position: ${finish.recordPos}\nDate: ${finish.recordDate.toString()}'),
+                                ),
+                              );
+                            },
+                            options: CarouselOptions(
+                                autoPlay: false,
+                                enlargeCenterPage: true,
+                                enableInfiniteScroll: false),
+                          ),
+                        ]
+                      ],
+                    );
+                  },
                 );
               },
             ),

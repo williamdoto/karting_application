@@ -7,6 +7,8 @@ class Record {
   final String recordAvgTime;
   final String recordFastestLap;
   final int recordPos;
+  final int recordTotalRacers;
+  final String recordPoleGap;
 
   Record({
     required this.trackName,
@@ -15,6 +17,8 @@ class Record {
     required this.recordAvgTime,
     required this.recordFastestLap,
     required this.recordPos,
+    required this.recordPoleGap,
+    required this.recordTotalRacers
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +29,8 @@ class Record {
       'recordAvgTime': recordAvgTime,
       'recordFastestLap': recordFastestLap,
       'recordPos': recordPos,
+      'recordPoleGap': recordPoleGap,
+      'recordTotalRacers': recordTotalRacers,
     };
   }
 
@@ -36,6 +42,8 @@ class Record {
       recordAvgTime: map['recordAvgTime'] as String,
       recordFastestLap: map['recordFastestLap'] as String,
       recordPos: map['recordPos'] as int,
+      recordTotalRacers: map['recordTotalRacers'] as int,
+      recordPoleGap: map['recordPoleGap'] as String,
     );
   }
 
@@ -50,6 +58,8 @@ class Record {
       recordAvgTime: data['recordAvgTime'] ?? '',
       recordFastestLap: data['recordFastestLap'] ?? '',
       recordPos: data['recordPos'] ?? 0,
+      recordTotalRacers: data['recordTotalRacers'] ?? 0,
+      recordPoleGap: data['recordPoleGap'] ?? '0.000',
     );
   }
 }
