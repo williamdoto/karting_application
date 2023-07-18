@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -110,7 +111,8 @@ class _TrackDetailState extends State<TrackDetail> {
         );
       });
     } else {
-      // Save track to Firestore
+      // Save track to Firestore\
+      
       FirebaseFirestore.instance
           .collection('User')
           .doc(user.uid)
@@ -140,7 +142,7 @@ class _TrackDetailState extends State<TrackDetail> {
     late String? website =
         placeDetails != null ? placeDetails!['website'] : 'N/A';
 
-    late double? rating = placeDetails != null ? placeDetails!['rating'] : 0.0;
+    late double? rating = placeDetails != null ? (placeDetails!['rating']?.toDouble()) : 0.0;
     // Fetch opening hours
     List<dynamic>? openingHours = placeDetails != null
         ? (placeDetails!['opening_hours']?['weekday_text'] as List<dynamic>?)
