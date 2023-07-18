@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'TrackDetail.dart';
+
 class PodiumFinish {
   final String trackName;
   final DateTime recordDate;
@@ -199,32 +201,50 @@ class _HomePageState extends State<HomePage> {
                 List savedTracks = snapshot.data!.docs.map((doc) {
                   Map<String, dynamic> data =
                       doc.data() as Map<String, dynamic>;
-                  Map<String, dynamic> trackData = data['trackData'];
-                  return trackData['name'];
+                  return data;
                 }).toList();
 
                 return Column(
                   children: [
-                    SizedBox(height: 10),
-                    Text('Saved Tracks',
+                    const SizedBox(height: 10),
+                    const Text('Saved Tracks',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black)),
                     if (savedTracks.isEmpty)
-                      Text('No saved tracks',
+                      const Text('No saved tracks',
                           style: TextStyle(fontSize: 16, color: Colors.black)),
                     if (savedTracks.isNotEmpty)
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: savedTracks.length,
-                        itemBuilder: (context, index) {
-                          String trackName = savedTracks[index];
-                          return ListTile(
-                            title: Text(trackName),
-                          );
-                        },
+                      Container(
+                        height: MediaQuery.of(context).size.height *
+                            0.23, // Adjust this value as needed
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: savedTracks.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> trackData = savedTracks[index];
+                            String trackName = trackData['trackData']['name'];
+                            return ListTile(
+                              title: Text(trackName),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TrackDetail(
+                                      kartPlace: trackData['trackData'],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          separatorBuilder: (context, index) => const Divider(),
+                        ),
                       ),
                   ],
                 );

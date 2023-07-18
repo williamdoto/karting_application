@@ -297,6 +297,7 @@ class _TrackPageState extends State<TrackPage> {
                                 }).then((value) {
                                   setState(() {
                                     _savedPlaces.add(_kartPlaces[index]);
+                                    print(_kartPlaces);
                                   });
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
