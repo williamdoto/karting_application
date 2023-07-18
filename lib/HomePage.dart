@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import 'LoginPage.dart';
 import 'TrackDetail.dart';
 
@@ -38,6 +39,9 @@ class _HomePageState extends State<HomePage> {
   final _auth = FirebaseAuth.instance;
   late User user;
   late Future<void> _fetchUserFuture;
+  Color gold = Color(0xFFD4AF37);
+  Color silver = Color(0xFFC0C0C0);
+  Color bronze = Color(0xFFCD7F32);
 
   @override
   void initState() {
@@ -227,39 +231,63 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
 
-return Column(
-  children: [
-    stats,
-    if (podiumFinishes.isNotEmpty) ...[
-      const SizedBox(height: 13),
-      const Text('Podium Finishes',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black)),
-      CarouselSlider.builder(
-        itemCount: podiumFinishes.length,
-        itemBuilder: (context, index, realIdx) {
-          PodiumFinish finish = podiumFinishes[index];
-          return Card(
-            child: ListTile(
-              title: Text(finish.trackName),
-              subtitle: Text(
-                  'Position: ${finish.recordPos}\nDate: ${finish.recordDate.toString()}'),
-            ),
-          );
-        },
-        options: CarouselOptions(
-            autoPlay: false,
-            enlargeCenterPage: true,
-            enableInfiniteScroll: false,
-            aspectRatio: 5/2, // Adjust this to change the height of the cards
-        ),
-      ),
-    ]
-  ],
-);
-
+                    return Column(
+                      children: [
+                        stats,
+                        if (podiumFinishes.isNotEmpty) ...[
+                          const SizedBox(height: 13),
+                          const Text('Podium Finishes',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          CarouselSlider.builder(
+                            itemCount: podiumFinishes.length,
+                            itemBuilder: (context, index, realIdx) {
+                              PodiumFinish finish = podiumFinishes[index];
+                              return Card(
+                                child: Container(
+                                  height: 80, // Adjust as needed
+                                  width: double.infinity, // Adjust as needed
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        finish.trackName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.emoji_events,
+                                        color: finish.recordPos == 1
+                                            ? gold
+                                            : finish.recordPos == 2
+                                                ? silver
+                                                : bronze,
+                                        size: 50.0, // Adjust size as needed
+                                      ),
+                                      Text(
+                                        'Position: ${finish.recordPos}\nDate: ${DateFormat('yyyy-MM-dd').format(finish.recordDate)}',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            options: CarouselOptions(
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: false,
+                              aspectRatio: 5 /
+                                  3, // Adjust this to change the height of the cards
+                            ),
+                          ),
+                        ]
+                      ],
+                    );
                   },
                 );
               },
