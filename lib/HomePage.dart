@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
+import 'LoginPage.dart';
 import 'TrackDetail.dart';
 
 class PodiumFinish {
@@ -57,6 +57,10 @@ class _HomePageState extends State<HomePage> {
     await Firebase.initializeApp();
   }
 
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,6 +71,26 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
         ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: signOut,
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.logout, color: Colors.black), // Add the icon here
+                Padding(
+                  padding:
+                      EdgeInsets.only(left: 8.0), // Adjust padding as needed
+                  child: Text('Logout', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            ),
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: BorderSide(color: Colors.purple)))),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
