@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Record {
+  final String id;
   final String trackName;
   final DateTime recordDate;
   final int recordLap;
@@ -11,6 +12,7 @@ class Record {
   final String recordPoleGap;
 
   Record({
+    required this.id,
     required this.trackName,
     required this.recordDate,
     required this.recordLap,
@@ -23,6 +25,7 @@ class Record {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'trackName': trackName,
       'recordDate': recordDate,
       'recordLap': recordLap,
@@ -36,6 +39,7 @@ class Record {
 
   static Record fromMap(Map<String, dynamic> map) {
     return Record(
+      id: map['id'] as String,
       trackName: map['trackName'] as String,
       recordDate: (map['recordDate'] as Timestamp).toDate(),
       recordLap: map['recordLap'] as int,
@@ -52,6 +56,7 @@ class Record {
     Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
 
     return Record(
+      id: doc.id, 
       trackName: data['trackName'] ?? '',
       recordDate: (data['recordDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       recordLap: data['recordLap'] ?? 0,

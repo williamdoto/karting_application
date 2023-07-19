@@ -126,7 +126,8 @@ class _RecordPageState extends State<RecordPage> {
 
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         if (snapshot.data!.docs.isEmpty) {
@@ -179,7 +180,42 @@ class _RecordPageState extends State<RecordPage> {
 
                           return ListView(
                             children: records.map((Record record) {
-                              return RecordCard(record: record);
+                              return Dismissible(
+                                key: Key(record.id),
+                                onDismissed: (direction) {
+                                  // Store the item temporarily
+                                  var temp = record;
+
+                                  // Remove the item from the data source.
+                                  FirebaseFirestore.instance
+                                      .collection('User')
+                                      .doc(user.uid)
+                                      .collection('Record')
+                                      .doc(record.id)
+                                      .delete();
+
+                                  // Show a snackbar with an undo button.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Record dismissed'),
+                                      action: SnackBarAction(
+                                        label: 'UNDO',
+                                        onPressed: () {
+                                          // Add the item back into Firestore
+                                          FirebaseFirestore.instance
+                                              .collection('User')
+                                              .doc(user.uid)
+                                              .collection('Record')
+                                              .doc(temp.id)
+                                              .set(temp.toMap());
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                                background: Container(color: Colors.red),
+                                child: RecordCard(record: record),
+                              );
                             }).toList(),
                           );
                         }
