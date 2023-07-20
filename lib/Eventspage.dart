@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import your Event and CreateEventPage model here
 import 'models/events_model.dart';
 import 'CreateEventPage.dart';
 import 'EventCard.dart';
+import 'dart:async';
 
 class EventsPage extends StatefulWidget {
   @override
@@ -11,23 +11,36 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-  List<Events> eventsList = [];
-  final TextEditingController _searchController = TextEditingController();
+  final _searchController = StreamController<String>();
+  final _searchTextStreamController = StreamController<String>();
+  String _sortingField = 'eventName';
+  String _sortingOrder = 'asc';
+
+@override
+  void dispose() {
+    _searchController.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Search...',
-            border: InputBorder.none,
+        automaticallyImplyLeading: false,
+        toolbarHeight: 120,
+        title: SearchBar(
+          
+            hintText: 'Search Events...',
+            onChanged: (value) {
+            _searchTextStreamController.add(value);
+          },
           ),
-        ),
-        actions: <Widget>[
+          
+          
+        
+        actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
@@ -37,34 +50,88 @@ class _EventsPageState extends State<EventsPage> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future:
-            getEvents(), // Implement this function to fetch data from Firestore
-        builder: (BuildContext context, AsyncSnapshot<List<Events>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              eventsList = snapshot.data!;
-              return ListView.builder(
-                itemCount: eventsList.length,
-                itemBuilder: (context, index) {
-                  return EventCard(event: eventsList[index]);
-                },
-              );
-            }
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          children: [
+            DropdownButtonFormField(
+              items: [
+                DropdownMenuItem(value: 'eventName', child: Text('Event Name')),
+                // Add more fields if necessary
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _sortingField = value.toString();
+                });
+              },
+              value: _sortingField,
+            ),
+            DropdownButtonFormField(
+              items: [
+                DropdownMenuItem(value: 'asc', child: Text('Ascending')),
+                DropdownMenuItem(value: 'desc', child: Text('Descending')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _sortingOrder = value.toString();
+                });
+              },
+              value: _sortingOrder,
+            ),
+            Expanded(
+              child: StreamBuilder<String>(
+  stream: _searchTextStreamController.stream,
+  initialData: '',
+  builder: (context, searchSnapshot) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('events').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.data!.docs.isEmpty) {
+          return Center(child: Text('No events found'));
+        } else {
+          List<Events> events = snapshot.data!.docs.map((DocumentSnapshot document) {
+            return Events.fromMap(document.data() as Map<String, dynamic>);
+          }).toList();
+
+          // Filter the events based on the search text
+          String searchText = searchSnapshot.data!;
+          if (searchText.isNotEmpty) {
+            events = events.where((event) => event.eventName.toLowerCase().contains(searchText.toLowerCase())).toList();
           }
-        },
+
+          events.sort((a, b) {
+            if (_sortingField == 'eventName') {
+              return _sortingOrder == 'asc'
+                  ? a.eventName.toLowerCase().compareTo(b.eventName.toLowerCase())
+                  : b.eventName.toLowerCase().compareTo(a.eventName.toLowerCase());
+            }
+            // Add more sorting logic if necessary
+            return 0;
+          });
+
+          return ListView(
+            children: events.map((Events event) {
+              return EventCard(event: event);
+            }).toList(),
+          );
+        }
+      },
+    );
+  },
+)
+
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Future<List<Events>> getEvents() async {
-    var snapshot = await FirebaseFirestore.instance.collection('events').get();
-    return snapshot.docs
-        .map<Events>((doc) => Events.fromMap(doc.data()))
-        .toList();
   }
 }
