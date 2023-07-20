@@ -10,6 +10,7 @@ class Record {
   final int recordPos;
   final int recordTotalRacers;
   final String recordPoleGap;
+  final String eventId; // new field
 
   Record({
     required this.id,
@@ -20,7 +21,8 @@ class Record {
     required this.recordFastestLap,
     required this.recordPos,
     required this.recordPoleGap,
-    required this.recordTotalRacers
+    required this.recordTotalRacers,
+    required this.eventId, // new field
   });
 
   Map<String, dynamic> toMap() {
@@ -34,24 +36,11 @@ class Record {
       'recordPos': recordPos,
       'recordPoleGap': recordPoleGap,
       'recordTotalRacers': recordTotalRacers,
+      'eventId': eventId, // new field
     };
   }
 
-  static Record fromMap(Map<String, dynamic> map) {
-    return Record(
-      id: map['id'] as String,
-      trackName: map['trackName'] as String,
-      recordDate: (map['recordDate'] as Timestamp).toDate(),
-      recordLap: map['recordLap'] as int,
-      recordAvgTime: map['recordAvgTime'] as String,
-      recordFastestLap: map['recordFastestLap'] as String,
-      recordPos: map['recordPos'] as int,
-      recordTotalRacers: map['recordTotalRacers'] as int,
-      recordPoleGap: map['recordPoleGap'] as String,
-    );
-  }
-
-  // New factory constructor
+  // Updated factory constructor
   factory Record.fromDocumentSnapshot(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
 
@@ -65,6 +54,7 @@ class Record {
       recordPos: data['recordPos'] ?? 0,
       recordTotalRacers: data['recordTotalRacers'] ?? 0,
       recordPoleGap: data['recordPoleGap'] ?? '0.000',
+      eventId: data['eventId'] ?? '', // new field
     );
   }
 }
