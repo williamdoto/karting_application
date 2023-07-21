@@ -80,16 +80,36 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _submit() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      try {
-        await _auth.createUserWithEmailAndPassword(
-            email: _email, password: _password);
-        Navigator.of(context).pop();
-      } catch (e) {
-        print(e);
+void _submit() async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+    try {
+      await _auth.createUserWithEmailAndPassword(email: _email, password: _password);
+      Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('The email address is already in use by another account.'),
+              actions: <Widget>[
+                ElevatedButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
+    } catch (e) {
+      print(e);
     }
   }
+}
+
 }

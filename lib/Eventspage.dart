@@ -16,7 +16,7 @@ class _EventsPageState extends State<EventsPage> {
   String _sortingField = 'eventName';
   String _sortingOrder = 'asc';
 
-@override
+  @override
   void dispose() {
     _searchController.close();
     super.dispose();
@@ -29,15 +29,11 @@ class _EventsPageState extends State<EventsPage> {
         automaticallyImplyLeading: false,
         toolbarHeight: 120,
         title: SearchBar(
-          
-            hintText: 'Search Events...',
-            onChanged: (value) {
+          hintText: 'Search Events...',
+          onChanged: (value) {
             _searchTextStreamController.add(value);
           },
-          ),
-          
-          
-        
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -79,56 +75,67 @@ class _EventsPageState extends State<EventsPage> {
               value: _sortingOrder,
             ),
             Expanded(
-              child: StreamBuilder<String>(
-  stream: _searchTextStreamController.stream,
-  initialData: '',
-  builder: (context, searchSnapshot) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('events').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
+                child: StreamBuilder<String>(
+              stream: _searchTextStreamController.stream,
+              initialData: '',
+              builder: (context, searchSnapshot) {
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('events')
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-        if (snapshot.data!.docs.isEmpty) {
-          return Center(child: Text('No events found'));
-        } else {
-          List<Events> events = snapshot.data!.docs.map((DocumentSnapshot document) {
-            return Events.fromMap(document.data() as Map<String, dynamic>);
-          }).toList();
+                    if (snapshot.data!.docs.isEmpty) {
+                      return Center(child: Text('No events found'));
+                    } else {
+                      List<Events> events =
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                        return Events.fromMap(
+                            document.data() as Map<String, dynamic>);
+                      }).toList();
 
-          // Filter the events based on the search text
-          String searchText = searchSnapshot.data!;
-          if (searchText.isNotEmpty) {
-            events = events.where((event) => event.eventName.toLowerCase().contains(searchText.toLowerCase())).toList();
-          }
+                      // Filter the events based on the search text
+                      String searchText = searchSnapshot.data!;
+                      if (searchText.isNotEmpty) {
+                        events = events
+                            .where((event) => event.eventName
+                                .toLowerCase()
+                                .contains(searchText.toLowerCase()))
+                            .toList();
+                      }
 
-          events.sort((a, b) {
-            if (_sortingField == 'eventName') {
-              return _sortingOrder == 'asc'
-                  ? a.eventName.toLowerCase().compareTo(b.eventName.toLowerCase())
-                  : b.eventName.toLowerCase().compareTo(a.eventName.toLowerCase());
-            }
-            // Add more sorting logic if necessary
-            return 0;
-          });
+                      events.sort((a, b) {
+                        if (_sortingField == 'eventName') {
+                          return _sortingOrder == 'asc'
+                              ? a.eventName
+                                  .toLowerCase()
+                                  .compareTo(b.eventName.toLowerCase())
+                              : b.eventName
+                                  .toLowerCase()
+                                  .compareTo(a.eventName.toLowerCase());
+                        }
+                        // Add more sorting logic if necessary
+                        return 0;
+                      });
 
-          return ListView(
-            children: events.map((Events event) {
-              return EventCard(event: event);
-            }).toList(),
-          );
-        }
-      },
-    );
-  },
-)
-
-            ),
+                      return ListView(
+                        children: events.map((Events event) {
+                          return EventCard(event: event);
+                        }).toList(),
+                      );
+                    }
+                  },
+                );
+              },
+            )),
           ],
         ),
       ),
