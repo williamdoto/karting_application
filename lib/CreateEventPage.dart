@@ -86,30 +86,32 @@ class _CreateEventPageState extends State<CreateEventPage> {
       firstDate: DateTime(DateTime.now().year - 5),
       lastDate: DateTime(DateTime.now().year + 5),
     );
-    if (date != null)
+    if (date != null) {
       setState(() {
         _eventDate = date;
       });
+    }
   }
 
-  void _submitForm() {
+void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final eventName = _eventNameController.text;
       final trackName = _trackNameController.text;
       final creatorId = _auth.currentUser!.uid;
       final participants = _participantControllers.map((controller) => controller.text).toList();
-
+      DocumentReference docRef = FirebaseFirestore.instance.collection('events').doc();
       final newEvent = Events(
-        id: '', 
+        id: docRef.id, 
         eventName: eventName,
         eventDate: _eventDate,
         creatorId: creatorId,
         trackName: trackName,
-        participants: participants,
+        participants: participants, isFinished: false,
       );
 
-      FirebaseFirestore.instance.collection('events').add(newEvent.toMap());
-
+      docRef.set(newEvent.toMap());
+      Navigator.pop(context, true);
     }
   }
+
 }

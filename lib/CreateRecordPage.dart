@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 
 class CreateRecordPage extends StatefulWidget {
   final String? trackName;
+  final String? eventId;
 
-  const CreateRecordPage({Key? key, this.trackName}) : super(key: key);
+  const CreateRecordPage({Key? key, this.trackName, this.eventId}) : super(key: key);
   @override
   _CreateRecordPageState createState() => _CreateRecordPageState();
 }
@@ -49,7 +50,8 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
         } else {
           return Scaffold(
             appBar: AppBar(
-                automaticallyImplyLeading: false, title: const Text('Add Record')),
+                automaticallyImplyLeading: false,
+                title: const Text('Add Record')),
             body: Form(
               key: _formKey,
               child: ListView(
@@ -218,28 +220,49 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                   // Save Button
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    child: const Text('Save Record'),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // Save record to Firestore
-                        await FirebaseFirestore.instance
-                            .collection('User')
-                            .doc(user.uid)
-                            .collection('Record')
-                            .add({
-                          'trackName': _trackName,
-                          'recordDate': _recordDate,
-                          'recordLap': int.parse(_recordLap),
-                          'recordAvgTime': _recordAvgTime,
-                          'recordFastestLap': _recordFastestLap,
-                          'recordPos': int.parse(_recordPos),
-                          'recordPoleGap': _recordPoleGap,
-                          'recordTotalRacers': int.parse(_recordTotalRacers),
-                        });
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
+  child: const Text('Save Record'),
+  onPressed: () async {
+    if (_formKey.currentState!.validate()) {
+      // Prepare the record data
+      Map<String, dynamic> recordData = {
+        'userId': user.uid,
+        'trackName': _trackName,
+        'recordDate': _recordDate,
+        'recordLap': int.parse(_recordLap),
+        'recordAvgTime': _recordAvgTime,
+        'recordFastestLap': _recordFastestLap,
+        'recordPos': int.parse(_recordPos),
+        'recordPoleGap': _recordPoleGap,
+        'recordTotalRacers': int.parse(_recordTotalRacers),
+      };
+
+      if (widget.eventId != null) { // Assuming 'eventId' is a variable in the scope
+        recordData['eventId'] = widget.eventId;
+      }
+
+      // Save record to Firestore under the User collection
+      final docRef = await FirebaseFirestore.instance
+          .collection('User')
+          .doc(user.uid)
+          .collection('Record')
+          .add(recordData);
+          
+      // If eventId is not null, also save the record under the Events collection
+      if (widget.eventId != null) {
+        await FirebaseFirestore.instance
+            .collection('events')
+            .doc(widget.eventId)
+            .collection('Records')
+            .doc(docRef.id) // Using the same document ID
+            .set(recordData);
+      }
+
+      Navigator.pop(context, true); // Return true to the previous page
+    }
+  },
+),
+
+
                 ],
               ),
             ),

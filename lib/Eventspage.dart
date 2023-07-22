@@ -99,7 +99,9 @@ class _EventsPageState extends State<EventsPage> {
                       List<Events> events =
                           snapshot.data!.docs.map((DocumentSnapshot document) {
                         return Events.fromMap(
-                            document.data() as Map<String, dynamic>);
+                          document.data() as Map<String, dynamic>,
+                          id: document.id,
+                        );
                       }).toList();
 
                       // Filter the events based on the search text
@@ -128,6 +130,7 @@ class _EventsPageState extends State<EventsPage> {
 
                       return ListView(
                         children: events.map((Events event) {
+                          print(event.id);
                           return EventCard(event: event);
                         }).toList(),
                       );
