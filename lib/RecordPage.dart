@@ -131,113 +131,63 @@ class _RecordPageState extends State<RecordPage> {
                     value: _sortingOrder,
                   ),
                   Expanded(
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('User')
-                          .doc(user.uid)
-                          .collection('Record')
-                          .snapshots(),
+                    child: StreamBuilder<String>(
+                      stream: _searchController.stream,
+                      initialData: '',
                       builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return const Text('Something went wrong');
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        if (snapshot.data!.docs.isEmpty) {
-                          return const Center(child: Text('No records found'));
-                        } else {
-                          List<Record> records = snapshot.data!.docs
-                              .map((DocumentSnapshot document) {
-                            return Record.fromDocumentSnapshot(document);
-                          }).toList();
-
-                          records.sort((a, b) {
-                            if (_sortingField == 'recordTrackName') {
-                              return _sortingOrder == 'asc'
-                                  ? a.trackName
-                                      .toLowerCase()
-                                      .compareTo(b.trackName.toLowerCase())
-                                  : b.trackName
-                                      .toLowerCase()
-                                      .compareTo(a.trackName.toLowerCase());
+                          AsyncSnapshot<String> searchSnapshot) {
+                        return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('User')
+                              .doc(user.uid)
+                              .collection('Record')
+                              .snapshots(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
                             }
 
-                            double aValue = 0.0;
-                            double bValue = 0.0;
-
-                            switch (_sortingField) {
-                              case 'recordFastestLap':
-                                aValue = _convertTimeStringToSeconds(
-                                    a.recordFastestLap);
-                                bValue = _convertTimeStringToSeconds(
-                                    b.recordFastestLap);
-                                break;
-                              case 'recordAvgTime':
-                                aValue = _convertTimeStringToSeconds(
-                                    a.recordAvgTime);
-                                bValue = _convertTimeStringToSeconds(
-                                    b.recordAvgTime);
-                                break;
-                              case 'recordDate':
-                                aValue = a.recordDate.millisecondsSinceEpoch
-                                    .toDouble();
-                                bValue = b.recordDate.millisecondsSinceEpoch
-                                    .toDouble();
-                                break;
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             }
 
-                            return _sortingOrder == 'asc'
-                                ? aValue.compareTo(bValue)
-                                : bValue.compareTo(aValue);
-                          });
+                            if (snapshot.data!.docs.isEmpty) {
+                              return const Center(
+                                  child: Text('No records found'));
+                            } else {
+                              List<Record> records = snapshot.data!.docs
+                                  .map((DocumentSnapshot document) {
+                                return Record.fromDocumentSnapshot(document);
+                              }).toList();
 
-                          return ListView(
-                            children: records.map((Record record) {
-                              return Dismissible(
-                                key: Key(record.id),
-                                onDismissed: (direction) {
-                                  // Store the item temporarily
-                                  var temp = record;
+                              // Filter the records based on the search term.
+                              String searchTerm = searchSnapshot.data!;
+                              List<Record> filteredRecords =
+                                  records.where((record) {
+                                return record.trackName
+                                    .toLowerCase()
+                                    .contains(searchTerm.toLowerCase());
+                              }).toList();
 
-                                  // Remove the item from the data source.
-                                  FirebaseFirestore.instance
-                                      .collection('User')
-                                      .doc(user.uid)
-                                      .collection('Record')
-                                      .doc(record.id)
-                                      .delete();
-
-                                  // Show a snackbar with an undo button.
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Record dismissed'),
-                                      action: SnackBarAction(
-                                        label: 'UNDO',
-                                        onPressed: () {
-                                          // Add the item back into Firestore
-                                          FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(user.uid)
-                                              .collection('Record')
-                                              .doc(temp.id)
-                                              .set(temp.toMap());
-                                        },
-                                      ),
-                                    ),
+                              // Use `filteredRecords` instead of `records`
+                              return ListView(
+                                children: filteredRecords.map((Record record) {
+                                  return Dismissible(
+                                    key: Key(record.id),
+                                    onDismissed: (direction) {
+                                      // ...
+                                    },
+                                    background: Container(color: Colors.red),
+                                    child: RecordCard(record: record),
                                   );
-                                },
-                                background: Container(color: Colors.red),
-                                child: RecordCard(record: record),
+                                }).toList(),
                               );
-                            }).toList(),
-                          );
-                        }
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
