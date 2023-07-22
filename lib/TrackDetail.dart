@@ -112,7 +112,7 @@ class _TrackDetailState extends State<TrackDetail> {
       });
     } else {
       // Save track to Firestore\
-      
+
       FirebaseFirestore.instance
           .collection('User')
           .doc(user.uid)
@@ -142,7 +142,10 @@ class _TrackDetailState extends State<TrackDetail> {
     late String? website =
         placeDetails != null ? placeDetails!['website'] : 'N/A';
 
-    late double? rating = placeDetails != null ? (placeDetails!['rating']?.toDouble()) : 0.0;
+    double buttonSize = MediaQuery.of(context).size.width * 0.08;
+
+    late double? rating =
+        placeDetails != null ? (placeDetails!['rating']?.toDouble()) : 0.0;
     // Fetch opening hours
     List<dynamic>? openingHours = placeDetails != null
         ? (placeDetails!['opening_hours']?['weekday_text'] as List<dynamic>?)
@@ -171,7 +174,7 @@ class _TrackDetailState extends State<TrackDetail> {
         ),
         body: SingleChildScrollView(
             child: ConstrainedBox(
-          constraints: BoxConstraints(),
+          constraints: const BoxConstraints(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,16 +199,16 @@ class _TrackDetailState extends State<TrackDetail> {
                 padding: EdgeInsets.symmetric(
                     horizontal: MediaQuery.of(context).size.width * 0.05),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    ElevatedButton.icon(
+                    IconButton.filledTonal(
+                      iconSize: buttonSize,
                       icon: const Icon(Icons.directions),
-                      label: const Text('Directions'),
                       onPressed: () => _launchURL(),
                     ),
-                    ElevatedButton.icon(
+                    IconButton.filledTonal(
+                      iconSize: buttonSize,
                       icon: const Icon(Icons.book),
-                      label: const Text('Record'),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -216,10 +219,10 @@ class _TrackDetailState extends State<TrackDetail> {
                         );
                       },
                     ),
-                    ElevatedButton.icon(
+                    IconButton.filledTonal(
+                      iconSize: buttonSize,
                       icon: const Icon(Icons.phone),
                       onPressed: () => _launchCall(phoneNumber),
-                      label: const Text('Call'),
                     ),
                   ],
                 ),
