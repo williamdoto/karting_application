@@ -49,7 +49,8 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
         } else {
           return Scaffold(
             appBar: AppBar(
-                automaticallyImplyLeading: false, title: const Text('Add Record')),
+                automaticallyImplyLeading: false,
+                title: const Text('Add Record')),
             body: Form(
               key: _formKey,
               child: ListView(
@@ -218,7 +219,17 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                   // Save Button
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    child: const Text('Save Record'),
+                    child: const Text(
+                      'Save Record',
+                      style: const TextStyle(
+                        color:const Color(0xffE8EBFF), // Change text color
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Color(0xff5E2CED), // Change button color
+                      ),
+                    ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         // Save record to Firestore

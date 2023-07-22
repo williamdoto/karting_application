@@ -6,6 +6,7 @@ import 'package:karting_application/models/record_model.dart';
 class RecordCard extends StatefulWidget {
   final Record record;
 
+
   RecordCard({required this.record});
 
   @override
@@ -13,11 +14,17 @@ class RecordCard extends StatefulWidget {
 }
 
 class _RecordCardState extends State<RecordCard> {
+
+  bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: _isExpanded ? Colors.white : Color(0xffE8EBFF),
       child: ExpansionTile(
         leading: const Icon(Icons.sports_score),
+        iconColor: Color(0xff5E2CED), // When expanded
+        collapsedIconColor: Colors.black, // When collapsed
         title: Text(
           widget.record.trackName,
           style: const TextStyle(
@@ -42,16 +49,21 @@ class _RecordCardState extends State<RecordCard> {
           ListTile(
             title: Text('Fastest Lap: ${widget.record.recordFastestLap}'),
           ),
-                    ListTile(
+          ListTile(
             title: Text('Gap to Pole: ${widget.record.recordPoleGap}'),
           ),
           ListTile(
             title: Text('Position: ${widget.record.recordPos}'),
           ),
-                              ListTile(
+          ListTile(
             title: Text('Total Racers: ${widget.record.recordTotalRacers}'),
           ),
         ],
+                onExpansionChanged: (isExpanded) { // when the expansion state changes
+          setState(() {
+            _isExpanded = isExpanded; // update _isExpanded
+          });
+        },
       ),
     );
   }

@@ -6,6 +6,11 @@ import 'package:karting_application/CreateRecordPage.dart';
 import 'package:karting_application/models/record_model.dart';
 import 'dart:async';
 
+class AppColors {
+  static const Color backgroundColor = Color(0xffE8EBFF);
+  // You can define more colors here
+}
+
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
 
@@ -53,6 +58,14 @@ class _RecordPageState extends State<RecordPage> {
               toolbarHeight: 120,
               title: SearchBar(
                 hintText: 'Search...',
+                backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                    // You can return different colors based on the states.
+                    // For example, if the widget is pressed, hovered, focused, selected etc.
+                    // But if you want the same color for all states, ignore the states.
+                    return AppColors.backgroundColor;
+                  },
+                ),
                 onChanged: (value) {
                   _searchController.add(value);
                 },
@@ -60,6 +73,7 @@ class _RecordPageState extends State<RecordPage> {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add),
+                  color: Color(0xff5E2CED),
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
@@ -80,6 +94,9 @@ class _RecordPageState extends State<RecordPage> {
               child: Column(
                 children: [
                   DropdownButtonFormField(
+                    // set the color of the dropdown
+                    style: TextStyle(
+                        color: Color(0xff5E2CED)), // set the color of the text
                     items: const [
                       DropdownMenuItem(
                           value: 'recordDate', child: Text('Date')),
@@ -99,6 +116,8 @@ class _RecordPageState extends State<RecordPage> {
                     value: _sortingField,
                   ),
                   DropdownButtonFormField(
+                    style: TextStyle(
+                        color: Color(0xff5E2CED)), // set the color of the text
                     items: const [
                       DropdownMenuItem(value: 'asc', child: Text('Ascending')),
                       DropdownMenuItem(
