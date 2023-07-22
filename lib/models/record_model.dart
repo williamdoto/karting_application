@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Record {
   final String id;
   final String trackName;
@@ -11,6 +10,7 @@ class Record {
   final int recordTotalRacers;
   final String recordPoleGap;
   final String eventId; // new field
+  final String userId; // new field
 
   Record({
     required this.id,
@@ -23,6 +23,7 @@ class Record {
     required this.recordPoleGap,
     required this.recordTotalRacers,
     required this.eventId, // new field
+    required this.userId, // new field
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +38,7 @@ class Record {
       'recordPoleGap': recordPoleGap,
       'recordTotalRacers': recordTotalRacers,
       'eventId': eventId, // new field
+      'userId': userId, // new field
     };
   }
 
@@ -55,6 +57,7 @@ class Record {
       recordTotalRacers: data['recordTotalRacers'] ?? 0,
       recordPoleGap: data['recordPoleGap'] ?? '0.000',
       eventId: data['eventId'] ?? '', // new field
+      userId: data['userId'] ?? '', // new field
     );
   }
 }

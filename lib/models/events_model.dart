@@ -7,6 +7,7 @@ class Events {
   final String trackName;
   final String creatorId;
   final List<String> participants;
+  final bool isFinished;
 
   Events({
     required this.id,
@@ -15,6 +16,7 @@ class Events {
     required this.trackName,
     required this.creatorId,
     required this.participants,
+    required this.isFinished,  // Add isFinished field
   });
 
   factory Events.fromMap(Map<String, dynamic> map, {String id = ''}) {
@@ -25,6 +27,7 @@ class Events {
       trackName: map['trackName'] as String,
       creatorId: map['creatorId'] as String,
       participants: List<String>.from(map['participants'] as List<dynamic>),
+      isFinished: map['isFinished'] as bool ?? false,  // Add isFinished field
     );
   }
 
@@ -35,6 +38,7 @@ class Events {
       'trackName': trackName,
       'creatorId': creatorId,
       'participants': participants,
+      'isFinished': isFinished,  // Add isFinished field
     };
   }
 }

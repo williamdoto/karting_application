@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 
 class CreateRecordPage extends StatefulWidget {
   final String? trackName;
+  final String? eventId;
 
-  const CreateRecordPage({Key? key, this.trackName}) : super(key: key);
+  const CreateRecordPage({Key? key, this.trackName, this.eventId}) : super(key: key);
   @override
   _CreateRecordPageState createState() => _CreateRecordPageState();
 }
@@ -50,6 +51,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
           return Scaffold(
             appBar: AppBar(
                 automaticallyImplyLeading: false,
+               
                 title: const Text('Add Record')),
             body: Form(
               key: _formKey,
@@ -219,17 +221,7 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
                   // Save Button
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    child: const Text(
-                      'Save Record',
-                      style: const TextStyle(
-                        color:const Color(0xffE8EBFF), // Change text color
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        Color(0xff5E2CED), // Change button color
-                      ),
-                    ),
+                    child: const Text('Save Record'),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         // Save record to Firestore
