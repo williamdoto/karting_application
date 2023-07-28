@@ -19,7 +19,9 @@ class RecordPage extends StatefulWidget {
 }
 
 class _RecordPageState extends State<RecordPage> {
-  final _searchController = StreamController<String>();
+  // final _searchController = StreamController<String>();
+  final _searchController = StreamController<String>.broadcast();
+
   final _auth = FirebaseAuth.instance;
   late User user;
   String _sortingField = 'recordDate';
@@ -106,7 +108,7 @@ class _RecordPageState extends State<RecordPage> {
                       DropdownMenuItem(
                           value: 'recordAvgTime', child: Text('Avg Time')),
                       DropdownMenuItem(
-                          value: 'recordTrackName', child: Text('Track Name')),
+                          value: 'trackName', child: Text('Track Name')),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -141,6 +143,7 @@ class _RecordPageState extends State<RecordPage> {
                               .collection('User')
                               .doc(user.uid)
                               .collection('Record')
+                              .orderBy(_sortingField, descending: _sortingOrder == 'desc')
                               .snapshots(),
                           builder: (BuildContext context,
                               AsyncSnapshot<QuerySnapshot> snapshot) {
