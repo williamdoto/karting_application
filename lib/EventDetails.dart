@@ -119,7 +119,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   .collection('events')
                   .doc(widget.event.id)
                   .collection('Records')
-                  .orderBy('position')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -134,6 +133,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                 // Transforming documents to List
                 List<DocumentSnapshot> records = snapshot.data!.docs;
 
+                // If there are no records, return a message indicating that
+                if (records.isEmpty) {
+                  return Text('No records found.');
+                }
+
                 print('Number of Records: ${records.length}');
 
                 // Loop through the records list and print each record
@@ -141,23 +145,45 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   print('Record: ${record.data()}');
                 }
 
+                // Continue with the rest of your code to build the ListView
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: records.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('User ID: ${records[index]['userId']}'),
-                      subtitle:
-                          Text('Fastest Lap: ${records[index]['fastestLap']}'),
-                      leading: CircleAvatar(
-                        child: Text('${records[index]['position']}'),
-                      ),
+                    String userID = records[index]['userId'];
+
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('User')
+                          .doc(userID)
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+
+                        if (userSnapshot.hasError) {
+                          return Text('Error fetching user data');
+                        }
+
+                        String username = userSnapshot.data!['username'];
+
+                        return ListTile(
+                          title: Text('User: $username'),
+                          subtitle: Text(
+                              'Fastest Lap: ${records[index]['fastestLap']}'),
+                          leading: CircleAvatar(
+                            child: Text('${index + 1}'),
+                          ),
+                        );
+                      },
                     );
                   },
                 );
               },
-            ),
+            )
           ],
         ),
       ),
